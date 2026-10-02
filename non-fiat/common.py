@@ -18,6 +18,17 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+# Cron runs with an arbitrary cwd, so load_dotenv() above may not find the
+# Telegram credentials. Search the known locations explicitly.
+for _candidate in (
+    os.getenv("NONFIAT_ENV", ""),
+    "/opt/bb_screener/.env",
+    os.path.expanduser("~/.env"),
+    os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env"),
+):
+    if _candidate and os.path.exists(_candidate):
+        load_dotenv(_candidate, override=False)
+
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "")
 
